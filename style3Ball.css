@@ -1,0 +1,184 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    background-color: #313335;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px;
+    background-color: #3e447c; /* Background color behind h1 and h2 */
+    border: 10px solid #14273E;
+    border-bottom: none; /* Prevent double border where it meets the table */
+    box-sizing: border-box;
+    margin-top: 25px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column; /* Align h1 and header-right vertically */
+    margin-bottom: 20px; /* Space below header */
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 10px; /* Space between h2 and tabs */
+}
+
+h1 {
+    font-size: 5vw; /* Responsive font size */
+    margin-bottom: 30px; /* Remove bottom margin for header */
+    margin-top: 30px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5vw; /* Responsive font size */
+    margin-bottom: 0; /* Remove bottom margin */
+    margin-left: 10px;
+}
+
+h3 {
+    font-size: 1.25vw; /* Responsive font size */
+    margin-bottom: 0; /* Remove bottom margin */
+    margin-left: 10px;
+}
+
+.tabs #searchInput{
+    margin-left: 200px;
+}
+
+.tabs {
+    display: flex;
+    margin-top: 20px; /* Space between tabs and table */
+    margin-bottom: 0;
+}
+
+.tab-button {
+    background-color: #5C7593;
+    border: solid black 1px;
+    color: black;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 5px;
+}
+
+.tab-button:hover {
+    background-color: #2D4664;
+}
+
+.tab-button.active {
+    background-color: #14273E;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 10px solid #14273E;
+    margin-top: 0; /* Remove top margin since the border will join with the container */
+    margin-bottom: 25px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+
+tbody tr:nth-child(3n+1) {
+    border-top: 8px solid #14273E;
+}
+
+tbody tr:nth-child(3n) {
+    border-bottom: 8px dotted #14273E;
+}
+
+td {
+    border-right: 1px solid black;
+}
+
+td:last-child {
+    border-right: none;
+}
+
+thead tr {
+    background-color: #3e447c;
+}
+
+tbody tr:nth-child(6n-5),
+tbody tr:nth-child(6n-4),
+tbody tr:nth-child(6n-3) {
+    background-color: #2D4664;
+}
+
+tbody tr:nth-child(6n-2),
+tbody tr:nth-child(6n-1),
+tbody tr:nth-child(6n) {
+    background-color: #5C7593;
+}
+
+.todays_score {
+    width: 5px;
+}
+
+.todays_score.first {
+    background-color: #3e7c2a;
+    color: #1b1212;
+}
+
+.todays_score.second {
+    background-color: #9b9b27;
+    color: #1b1212;
+}
+
+.todays_score.third {
+    background-color: #8b3636;
+    color: #1b1212;
+}
+
+.todays_score.tie {
+    background-color: #4a6199;
+    color: #1b1212;
+}
+
+.favorite-button {
+    color: gold;
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    th, td {
+        padding: 4px;
+        font-size: 1.5vw; /* Smaller font size for smaller screens */
+    }
+
+    h1 {
+        font-size: 4vw; /* Larger font size for smaller screens */
+    }
+
+    h2 {
+        font-size: 2vw; /* Larger font size for smaller screens */
+    }
+
+    h3 {
+        font-size: 1.5vw; /* Larger font size for smaller screens */
+    }
+
+    .container, table {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .tab-button {
+        padding: 5px 10px;
+        font-size: 1vw; /* Adjust font size for smaller screens */
+    }
+}

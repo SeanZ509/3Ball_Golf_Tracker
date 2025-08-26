@@ -1,0 +1,199 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevents horizontal scroll issues */
+    overflow-y: auto; /* Allows vertical scrolling when needed */
+    display: block; /* Ensures normal page flow */
+    background-color: #313335;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px;
+    background-color: #3e447c;
+    border: 10px solid #14273E;
+    border-bottom: none;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.header {
+    width: 100%;
+    max-width: inherit;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+h1 {
+    font-size: 3vw;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+h2, h3 {
+    font-size: 1.5vw;
+    margin-bottom: 0;
+    margin-left: 10px;
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+.tabs .tab-button {
+    background-color: #5C7593;
+    margin-right: 5px;
+}
+
+.tabs .tab-button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+    color: #ccc;
+}
+
+.tabs input[type="text"] {
+    margin-left: auto;
+    padding-left: 8px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.tab-button:hover {
+    background-color: #2D4664;
+}
+
+.tab-button.active {
+    background-color: #14273E;
+    color: lightgrey;
+}
+
+table {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    border: 10px solid #14273E;
+    margin-top: 0;
+    margin-bottom: 25px;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+
+/* 🔥 Alternate colors for 2-ball groups */
+tbody tr:nth-child(4n+1),
+tbody tr:nth-child(4n+2) {
+    background-color: #5C7593;
+}
+
+tbody tr:nth-child(4n+3),
+tbody tr:nth-child(4n+4) {
+    background-color: #2D4664;
+}
+
+tbody tr:nth-child(2n+1) {
+    border-top: 4px solid #14273E;
+}
+
+tbody tr:nth-child(2n) {
+    border-bottom: 4px dotted #14273E;
+}
+
+td {
+    border-right: 1px solid black;
+}
+
+td:last-child {
+    border-right: none;
+}
+
+thead tr {
+    background-color: #3e447c;
+}
+
+.todays_score {
+    width: 5px;
+}
+
+.todays_score.first {
+    background-color: #3e7c2a;
+    color: #1b1212;
+}
+
+.todays_score.second {
+    background-color: #8b3636;
+    color: #1b1212;
+}
+
+.todays_score.tie {
+    background-color: #4a6199;
+    color: #1b1212;
+}
+
+.favorite-button {
+    color: gold;
+    cursor: pointer;
+    display: block;
+    margin: auto; /* Centers the star */
+    font-size: 20px;
+    position: relative;
+    bottom: 20px; /* Adjust for alignment */
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    th, td {
+        padding: 4px;
+        font-size: 1.5vw;
+    }
+
+    h1 {
+        font-size: 4vw;
+    }
+
+    h2 {
+        font-size: 2vw;
+    }
+
+    h3 {
+        font-size: 1.5vw;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 5px;
+    }
+
+    table {
+        width: 100%;
+        max-width: 100%;
+        padding: 5px;
+        white-space: nowrap;
+    }
+
+    .tab-button {
+        padding: 5px 10px;
+        font-size: 1vw;
+    }
+}
