@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round 3 Group Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2Ball.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Round 3 Group Results</h1>
+            <div class="header-right">
+                <h2>Current Tournament: <i>{{ TOURNEY_NAME }}</i></h2>
+                <h3>Status: Round 3 Complete</h3>
+                <div class="tabs">
+                    <button class="tab-button" onclick="changeTab('Solo')">Solo Leaderboard</button>
+                    <button class="tab-button" onclick="changeTab('Group_Leaderboard')">Group Leaderboard</button>
+                    <button class="tab-button" onclick="changeTab('R1')">R1 Results</button>
+                    <button class="tab-button" onclick="changeTab('R2')">R2 Results</button>
+                    <button class="tab-button active" onclick="changeTab('R3')">R3 Results</button>
+                    <button class="tab-button" onclick="changeTab('R4')">R4 Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>-</th>
+                <th>Position</th>
+                <th>Player</th>
+                <th>Score</th>
+                <th>Thru</th>
+                <th>Today's Score</th>
+                <th>R1</th>
+                <th>R2</th>
+                <th>R3</th>
+                <th>R4</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in group_placement %}
+                {% for player_info in group %}
+                <tr>
+                    <td>
+                        {% if loop.index == 2 %} <!-- This targets the second player in each group (1-based index) -->
+                            <i class="far fa-star favorite-button" data-group="{{ loop.index0 }}"></i>
+                        {% endif %}
+                    </td>
+                    <td>{{ player_info.player['Position'] }}</td>
+                    <td>{{ player_info.player['Player'] }}</td>
+                    <td>{{ player_info.player['Score'] }}</td>
+                    <td>{{ player_info.player['Through'] }}</td>
+                    <td class="todays_score {{ player_info.rank }}">{{ player_info.player['Todays_Round'] }}</td>
+                    <td>{{ player_info.player['R1'] }}</td>
+                    <td>{{ player_info.player['R2'] }}</td>
+                    <td>{{ player_info.player['R3'] }}</td>
+                    <td>{{ player_info.player['R4'] }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const favoriteButtons = document.querySelectorAll('.favorite-button');
+            favoriteButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.classList.toggle('far');
+                    button.classList.toggle('fas');
+                });
+            });
+        });
+
+        function changeTab(key) {
+            window.location.href = `/?key=${key}`;
+        }
+    </script>
+</body>
+</html>

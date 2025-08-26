@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="300">
+    <title>PGA 3-Ball Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style3Ball.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PGA 3-Ball Tracker</h1>
+            <div class="header-right">
+                <h2>Current Tournament: <i>{{ TOURNEY_NAME }}</i></h2>
+                <h3>Status: {{ ROUND_STATUS }}</h3>
+                <div class="tabs">
+                    <button class="tab-button" onclick="changeTab('Solo')">Solo Leaderboard</button>
+                    <button class="tab-button active" onclick="changeTab('Group_Leaderboard')">Group Leaderboard</button>
+                    <button class="tab-button" onclick="changeTab('R1')">R1 Results</button>
+                    <button class="tab-button" onclick="changeTab('R2')">R2 Results</button>
+                    <button class="tab-button" onclick="changeTab('R3')">R3 Results</button>
+                    <button class="tab-button" onclick="changeTab('R4')">R4 Results</button>
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search Player Name">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table id="leaderboardTable">
+        <thead>
+            <tr>
+                <th>-</th>
+                <th>Position</th>
+                <th>Player</th>
+                <th>Score</th>
+                <th>Thru</th>
+                <th>Today's Score</th>
+                <th>R1</th>
+                <th>R2</th>
+                <th>R3</th>
+                <th>R4</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in group_placement %}
+                {% for player_info in group %}
+                <tr 
+                    data-player-name="{{ player_info.player['Player'] }}" 
+                    data-grouped-with="{{ player_info.player['Grouped_With'] | tojson }}">
+                    <td>
+                        {% if loop.index == 2 %} <!-- This targets the second player in each group (1-based index) -->
+                            <i class="far fa-star favorite-button" data-group="{{ loop.index0 }}"></i>
+                        {% endif %}
+                    </td>
+                    <td>{{ player_info.player['Position'] }}</td>
+                    <td>{{ player_info.player['Player'] }}</td>
+                    <td>{{ player_info.player['Score'] }}</td>
+                    <td>{{ player_info.player['Through'] }}</td>
+                    <td class="todays_score {{ player_info.rank }}">{{ player_info.player['Todays_Round'] }}</td>
+                    <td>{{ player_info.player['R1'] }}</td>
+                    <td>{{ player_info.player['R2'] }}</td>
+                    <td>{{ player_info.player['R3'] }}</td>
+                    <td>{{ player_info.player['R4'] }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const favoriteButtons = document.querySelectorAll('.favorite-button');
+            const favoriteGroups = JSON.parse(localStorage.getItem('favoriteGroups')) || [];
+
+            // Restore favorite groups from localStorage
+            favoriteGroups.forEach(groupIndex => {
+                const button = favoriteButtons[groupIndex];
+                if (button) {
+                    button.classList.toggle('far');
+                    button.classList.toggle('fas');
+                    moveGroupToTop(button);
+                }
+            });
+
+            favoriteButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const groupIndex = Array.from(favoriteButtons).indexOf(button);
+                    if (button.classList.contains('far')) {
+                        favoriteGroups.push(groupIndex);
+                    } else {
+                        const index = favoriteGroups.indexOf(groupIndex);
+                        if (index > -1) {
+                            favoriteGroups.splice(index, 1);
+                        }
+                    }
+                    localStorage.setItem('favoriteGroups', JSON.stringify(favoriteGroups));
+                    button.classList.toggle('far');
+                    button.classList.toggle('fas');
+                    moveGroupToTop(event.target);
+                });
+            });
+        });
+
+        function moveGroupToTop(button) {
+            const table = document.getElementById("leaderboardTable");
+            const rows = Array.from(table.getElementsByTagName("tr"));
+            const headerRow = rows.shift(); // Remove header row from the list
+            const buttonRow = button.closest('tr');
+            const index = rows.indexOf(buttonRow);
+
+            // Calculate the start index of the group
+            const groupStart = index - (index % 3);
+            const groupRows = rows.slice(groupStart, groupStart + 3);
+
+            // Remove the group rows from their current position
+            groupRows.forEach(row => table.querySelector('tbody').removeChild(row));
+
+            // Insert the group rows at the top of the table, after the header
+            const tbody = table.querySelector('tbody');
+            groupRows.reverse().forEach(row => tbody.insertBefore(row, tbody.firstChild));
+        }
+
+        function filterTable() {
+            const input = document.getElementById("searchInput").value.toUpperCase();
+            const table = document.getElementById("leaderboardTable");
+            const rows = table.getElementsByTagName("tr");
+            const rowCount = rows.length;
+
+            if (input === "") {
+                // If the search input is empty, show all rows
+                for (let i = 1; i < rowCount; i++) {  // Start from 1 to skip the header row
+                    rows[i].style.display = "";
+                }
+                return;
+            }
+
+            // Hide all rows initially
+            for (let i = 1; i < rowCount; i++) {  // Start from 1 to skip the header row
+                rows[i].style.display = "none";
+            }
+
+            for (let i = 1; i < rowCount; i++) {
+                const cells = rows[i].getElementsByTagName("td");
+                let match = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j]) {
+                        if (cells[j].innerText.toUpperCase().indexOf(input) > -1) {
+                            match = true;
+                            const relativeIndex = i - 1;  // Adjust index to account for header row
+                            const groupStart = relativeIndex - (relativeIndex % 3) + 1;  // Calculate group start, adjusted back to 1-based index
+                            const groupEnd = Math.min(groupStart + 3, rowCount);  // Ensure we don't exceed row count
+                            for (let k = groupStart; k < groupEnd; k++) {
+                                rows[k].style.display = "";
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (match) break; // Stop after finding the first match
+            }
+        }
+
+        function changeTab(key) {
+            window.location.href = `/?key=${key}`;
+        }
+    </script>
+</body>
+</html>

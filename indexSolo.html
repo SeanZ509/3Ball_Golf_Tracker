@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="300">
+    <title>PGA Solo Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleSolo.css') }}">
+    <script>
+        function switchTab(key) {
+            window.location.href = `/?key=${key}`;
+        }
+
+        function filterTable() {
+            const input = document.getElementById("searchInput").value.toUpperCase();
+            const table = document.getElementById("leaderboardTable");
+            const rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {  // Start from 1 to skip the header row
+                const cells = rows[i].getElementsByTagName("td");
+                let match = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j]) {
+                        if (cells[j].innerText.toUpperCase().indexOf(input) > -1) {
+                            match = true;
+                            break;
+                        }
+                    }
+                }
+                rows[i].style.display = match ? "" : "none";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const favoriteButtons = document.querySelectorAll('.favorite-button');
+            const favoritePlayers = JSON.parse(localStorage.getItem('favoritePlayers')) || [];
+
+            // Restore favorite players from localStorage
+            favoritePlayers.forEach(playerIndex => {
+                const button = favoriteButtons[playerIndex];
+                if (button) {
+                    button.classList.toggle('far');
+                    button.classList.toggle('fas');
+                    movePlayerToTop(button);
+                }
+            });
+
+            favoriteButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const playerIndex = Array.from(favoriteButtons).indexOf(button);
+                    if (button.classList.contains('far')) {
+                        favoritePlayers.push(playerIndex);
+                    } else {
+                        const index = favoritePlayers.indexOf(playerIndex);
+                        if (index > -1) {
+                            favoritePlayers.splice(index, 1);
+                        }
+                    }
+                    localStorage.setItem('favoritePlayers', JSON.stringify(favoritePlayers));
+                    button.classList.toggle('far');
+                    button.classList.toggle('fas');
+                    movePlayerToTop(button);
+                });
+            });
+        });
+
+        function movePlayerToTop(button) {
+            const table = document.getElementById("leaderboardTable");
+            const rows = Array.from(table.getElementsByTagName("tr"));
+            const headerRow = rows.shift(); // Remove header row from the list
+            const buttonRow = button.closest('tr');
+            
+            // Remove the player row from its current position
+            table.querySelector('tbody').removeChild(buttonRow);
+
+            // Insert the player row at the top of the table, after the header
+            const tbody = table.querySelector('tbody');
+            tbody.insertBefore(buttonRow, tbody.firstChild);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PGA Solo Tracker</h1>
+            <div class="header-right">
+                <h2>Current Tournament: <i>{{ TOURNEY_NAME }}</i></h2>
+                <h3>Status: {{ ROUND_STATUS }}</h3>
+                <div class="tabs">
+                    <button class="tab-button {{ 'active' if request.args.get('key') == 'Solo' }}" onclick="switchTab('Solo')">Solo Leaderboard</button>
+                    <button class="tab-button {{ 'active' if request.args.get('key') == 'Group_Leaderboard' }}" onclick="switchTab('Group_Leaderboard')">Group Leaderboard</button>
+                    <button class="tab-button {{ 'active' if request.args.get('key') == 'R1' }}" onclick="switchTab('R1')">R1 Results</button>
+                    <button class="tab-button {{ 'active' if request.args.get('key') == 'R2' }}" onclick="switchTab('R2')">R2 Results</button>
+                    <button class="tab-button {{ 'active' if request.args.get('key') == 'R3' }}" onclick="switchTab('R3')">R3 Results</button>
+                    <button class="tab-button {{ 'active' if request.args.get('key') == 'R4' }}" onclick="switchTab('R4')">R4 Results</button>
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search Player Name">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table id="leaderboardTable">
+        <thead>
+            <tr>
+                <th>-</th>
+                <th>Position</th>
+                <th>Player</th>
+                <th>Score</th>
+                <th>Thru</th>
+                <th>Today's Score</th>
+                <th>R1</th>
+                <th>R2</th>
+                <th>R3</th>
+                <th>R4</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in solo_data %}
+                <tr>
+                    <td>
+                        <i class="far fa-star favorite-button" data-player="{{ loop.index0 }}"></i>
+                    </td>
+                    <td>{{ player['Position'] }}</td>
+                    <td>{{ player['Player'] }}</td>
+                    <td>{{ player['Score'] }}</td>
+                    <td>{{ player['Through'] }}</td>
+                    <td class="todays_score {{ player['Todays_Round'] }}">{{ player['Todays_Round'] }}</td>
+                    <td>{{ player['R1'] }}</td>
+                    <td>{{ player['R2'] }}</td>
+                    <td>{{ player['R3'] }}</td>
+                    <td>{{ player['R4'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
